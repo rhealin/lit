@@ -57,6 +57,26 @@ func (w *Wallit) PathPubHash160(kg portxo.KeyGen) [20]byte {
 	return pkh
 }
 
+// PathPubHashNonce160 returns a <20 byte pubkey hash
+// (with leading zeroes) for the given path and nonce.
+// It'll always return 20 bytes, or a nil if there's an error.
+func (w *Wallit) PathPubHashNonce160(kg portxo.KeyGen, nonce []byte) [20]byte {
+	var pkh [20]byte
+	pub := w.PathPubkey(kg)
+	if pub == nil {
+		return pkh
+	}
+
+	// Hash160 calculates the hash ripemd160(sha256(b)).
+	// SerializeUncompressed serializes a public key in a 65-byte
+	// uncompressed format
+
+	// idea: append nonce to pub.SerializeCompressed()
+	copy(pkh[:], btcutil.Hash160(append(pub.SerializeCompressed()[:], nonce...)))
+
+	return pkh
+}
+
 // ------------- end of 2 main key deriv functions
 
 // get a private key from the regular wallet
